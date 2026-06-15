@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block title %}Your Cart{% endblock %}
+
+{% block content %}
+<section class="section cart-section">
+  <h1>Your Shopping Cart</h1>
+
+  {% if cart %}
+  <div class="cart-layout">
+
+    <div class="cart-items">
+      <table class="cart-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Qty</th>
+            <th>Subtotal</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="cart-tbody">
+          {% for pid, item in cart.items() %}
+          <tr id="row-{{ pid }}">
+            <td class="cart-item-cell">
+              <img src="{{ item.image_url }}" alt="{{ item.name }}" class="cart-thumb" />
+              <span>{{ item.name }}</span>
+            </td>
+            <td>{{ "{:,.0f}".format(item.price) }} RWF</td>
+            <td>
+              <div class="qty-control-sm">
+                <button class="qty-btn-sm" onclick="changeQty('{{ pid }}', -1)">−</button>
+                <span class="qty-display" id="qty-{{ pid }}">{{ item.quantity }}</span>
+                <button class="qty-btn-sm" onclick="changeQty('{{ pid }}', 1)">+</button>
+              </div>
+            </td>
+            <td class="subtotal" id="sub-{{ pid }}">
+              {{ "{:,.0f}".format(item.price * item.quantity) }} RWF
+            </td>
+            <td>
+              <button class="remove-btn" onclick="removeItem('{{ pid }}')" title="Remove">✕</button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <aside class="cart-summary">
+      <h2>Order Summary</h2>
+      <div class="summary-line">
+        <span>Subtotal</span>
+        <span id="summary-total">{{ "{:,.0f}".format(total) }} RWF</span>
+      </div>
+      <div class="summary-line">
+        <span>Delivery (Kigali)</span>
+        <span>1,000 RWF</span>
+      </div>
+      <div class="summary-line total-line">
+        <span>Total</span>
+        <span id="grand-total">{{ "{:,.0f}".format(total + 1000) }} RWF</span>
+      </div>
+      <a href="{{ url_for('orders.checkout') }}" class="btn btn-primary btn-block">
+        Proceed to Checkout →
+      </a>
+      <a href="{{ url_for('products.catalog') }}" class="btn btn-outline btn-block" style="margin-top:0.5rem">
+        Continue Shopping
+      </a>
+    </aside>
+
+  </div>
+
+  {% else %}
+  <div class="empty-state">
+    <p style="font-size:3rem">🛍️</p>
+    <h2>Your cart is empty</h2>
+    <p>Add some beautiful pieces from our catalog!</p>
+    <a href="{{ url_for('products.catalog') }}" class="btn btn-primary">Browse Catalog</a>
+  </div>
+  {% endif %}
+
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  async function changeQty(pid, delta) {
+    const qtyEl  = document.getElementById('qty-' + pid);
+    const newQty = Math.max(0, parseInt(qtyEl.textContent) + delta);
+
+    const res  = await fetch('/cart/update', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ product_id: pid, quantity: newQty }),
+    });
+    const data = await res.json();
+
+    if (newQty === 0) {
+      document.getElementById('row-' + pid).remove();
+    } else {
+      qtyEl.textContent = newQty;
+      const row      = document.getElementById('row-' + pid);
+      const priceStr = row.cells[1].textContent.replace(/[^0-9]/g, '');
+      const subtotal = parseInt(priceStr) * newQty;
+      document.getElementById('sub-' + pid).textContent = subtotal.toLocaleString() + ' RWF';
+    }
+
+    updateCartBadge(data.cart_count);
+    const total = data.total;
+    document.getElementById('summary-total').textContent = total.toLocaleString('en-RW') + ' RWF';
+    document.getElementById('grand-total').textContent   = (total + 1000).toLocaleString('en-RW') + ' RWF';
+  }
+
+  async function removeItem(pid) {
+    const res  = await fetch('/cart/remove/' + pid, { method: 'POST' });
+    const data = await res.json();
+
+    document.getElementById('row-' + pid).remove();
+    updateCartBadge(data.cart_count);
+
+    const total = data.total;
+    document.getElementById('summary-total').textContent = total.toLocaleString('en-RW') + ' RWF';
+    document.getElementById('grand-total').textContent   = (total + 1000).toLocaleString('en-RW') + ' RWF';
+
+    if (data.cart_count === 0) location.reload();
+  }
+</script>
+{% endblock %}

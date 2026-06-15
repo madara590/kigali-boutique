@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: kigali-fashion
+    runtime: docker
+    plan: free
+    region: frankfurt
+    envVars:
+      - key: PYTHON_ENV
+        value: production
+    healthCheckPath: /
+    autoDeploy: true

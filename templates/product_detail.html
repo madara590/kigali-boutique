@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block content %}
+<section class="section detail-section">
+  <div class="detail-grid">
+
+    <div class="detail-img-col">
+      <img src="{{ product.image_url }}" alt="{{ product.name }}" class="detail-img" />
+      <span class="product-tag tag-lg">{{ product.category }}</span>
+    </div>
+
+    <div class="detail-info-col">
+      <h1 class="detail-name">{{ product.name }}</h1>
+      <p class="detail-price">{{ "{:,.0f}".format(product.price) }} <span>RWF</span></p>
+      <p class="detail-desc">{{ product.description }}</p>
+
+      <div class="detail-meta">
+        <span class="meta-label">Category:</span> {{ product.category }}<br/>
+        <span class="meta-label">In Stock:</span>
+        {% if product.stock > 10 %}
+          <span class="stock-ok">✅ Available</span>
+        {% elif product.stock > 0 %}
+          <span class="stock-low">⚠️ Only {{ product.stock }} left</span>
+        {% else %}
+          <span class="stock-out">❌ Out of stock</span>
+        {% endif %}
+      </div>
+
+      <div class="qty-row">
+        <label for="qty">Quantity:</label>
+        <div class="qty-control">
+          <button class="qty-btn" id="qty-minus">−</button>
+          <input type="number" id="qty" value="1" min="1" max="{{ product.stock }}" class="qty-input" />
+          <button class="qty-btn" id="qty-plus">+</button>
+        </div>
+      </div>
+
+      <button
+        class="btn btn-primary btn-lg add-to-cart-btn"
+        data-id="{{ product.id }}"
+        data-name="{{ product.name }}"
+        id="detail-add-btn"
+        {% if product.stock == 0 %}disabled{% endif %}
+      >
+        🛍️ Add to Cart
+      </button>
+
+      <a href="{{ url_for('products.catalog') }}" class="back-link">← Back to Catalog</a>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  const qtyInput = document.getElementById('qty');
+  document.getElementById('qty-minus').addEventListener('click', () => {
+    if (parseInt(qtyInput.value) > 1) qtyInput.value = parseInt(qtyInput.value) - 1;
+  });
+  document.getElementById('qty-plus').addEventListener('click', () => {
+    const max = parseInt(qtyInput.max);
+    if (parseInt(qtyInput.value) < max) qtyInput.value = parseInt(qtyInput.value) + 1;
+  });
+  document.getElementById('detail-add-btn').addEventListener('click', function () {
+    const qty = parseInt(qtyInput.value);
+    addToCart(this.dataset.id, this.dataset.name, qty);
+  });
+</script>
+{% endblock %}

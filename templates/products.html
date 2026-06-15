@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Catalog{% endblock %}
+
+{% block content %}
+<section class="section catalog-section">
+
+  <div class="catalog-header">
+    <h1>Our Collection</h1>
+    <p>{{ products|length }} item{{ 's' if products|length != 1 }} found</p>
+  </div>
+
+  <div class="filter-bar">
+    <a href="{{ url_for('products.catalog') }}"
+       class="filter-btn {% if not active_category %}active{% endif %}">
+      All
+    </a>
+    {% for cat in categories %}
+    <a href="{{ url_for('products.catalog') }}?category={{ cat }}"
+       class="filter-btn {% if active_category == cat %}active{% endif %}">
+      {{ cat }}
+    </a>
+    {% endfor %}
+  </div>
+
+  {% if products %}
+  <div class="product-grid">
+    {% for product in products %}
+    <article class="product-card">
+      <a href="{{ url_for('products.product_detail', product_id=product.id) }}">
+        <div class="product-img-wrap">
+          <img src="{{ product.image_url }}" alt="{{ product.name }}" class="product-img" loading="lazy" />
+          <span class="product-tag">{{ product.category }}</span>
+          {% if product.stock < 10 %}
+          <span class="stock-badge">Only {{ product.stock }} left!</span>
+          {% endif %}
+        </div>
+      </a>
+      <div class="product-info">
+        <h3 class="product-name">
+          <a href="{{ url_for('products.product_detail', product_id=product.id) }}">{{ product.name }}</a>
+        </h3>
+        <p class="product-desc">{{ product.description[:70] }}{% if product.description|length > 70 %}…{% endif %}</p>
+        <div class="product-footer">
+          <span class="product-price">{{ "{:,.0f}".format(product.price) }} RWF</span>
+          <button
+            class="btn btn-outline add-to-cart-btn"
+            data-id="{{ product.id }}"
+            data-name="{{ product.name }}"
+          >
+            + Cart
+          </button>
+        </div>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <p>😕 No products found in this category.</p>
+    <a href="{{ url_for('products.catalog') }}" class="btn btn-outline">View All</a>
+  </div>
+  {% endif %}
+
+</section>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Checkout{% endblock %}
+
+{% block content %}
+<section class="section checkout-section">
+  <h1>Checkout</h1>
+
+  <div class="checkout-layout">
+
+    <div class="checkout-form-col">
+      <h2>Delivery Details</h2>
+      <form action="{{ url_for('orders.place_order') }}" method="POST" class="checkout-form" id="checkout-form">
+
+        <div class="form-group">
+          <label for="full_name">Full Name *</label>
+          <input type="text" name="full_name" id="full_name" required placeholder="e.g. Amahoro Claudine" class="form-input" />
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email Address *</label>
+          <input type="email" name="email" id="email" required placeholder="you@example.com" class="form-input" />
+        </div>
+
+        <div class="form-group">
+          <label for="phone">MTN MoMo Phone Number *</label>
+          <input type="tel" name="phone" id="phone" required placeholder="078XXXXXXX" class="form-input" />
+          <small class="form-hint">This is the number we will send the MoMo payment request to.</small>
+        </div>
+
+        <div class="form-group">
+          <label for="address">Delivery Address *</label>
+          <textarea name="address" id="address" required rows="3" placeholder="e.g. KG 7 Ave, Kacyiru, Kigali" class="form-input"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Payment Method</label>
+          <div class="payment-option selected">
+            <span class="payment-icon">📱</span>
+            <div>
+              <strong>MTN Mobile Money</strong>
+              <p>Pay securely from your MoMo wallet</p>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block btn-lg">
+          Place Order & Pay with MoMo
+        </button>
+      </form>
+    </div>
+
+    <aside class="checkout-summary">
+      <h2>Your Order</h2>
+      {% for pid, item in cart.items() %}
+      <div class="checkout-item">
+        <img src="{{ item.image_url }}" alt="{{ item.name }}" class="cart-thumb" />
+        <div class="checkout-item-info">
+          <span class="checkout-item-name">{{ item.name }}</span>
+          <span class="checkout-item-qty">Qty: {{ item.quantity }}</span>
+        </div>
+        <span class="checkout-item-price">{{ "{:,.0f}".format(item.price * item.quantity) }} RWF</span>
+      </div>
+      {% endfor %}
+
+      <div class="summary-divider"></div>
+      <div class="summary-line">
+        <span>Subtotal</span>
+        <span>{{ "{:,.0f}".format(total) }} RWF</span>
+      </div>
+      <div class="summary-line">
+        <span>Delivery</span>
+        <span>1,000 RWF</span>
+      </div>
+      <div class="summary-line total-line">
+        <span>Total</span>
+        <span>{{ "{:,.0f}".format(total + 1000) }} RWF</span>
+      </div>
+    </aside>
+
+  </div>
+</section>
+{% endblock %}

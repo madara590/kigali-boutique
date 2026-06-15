@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}MoMo Payment{% endblock %}
+
+{% block content %}
+<section class="section momo-section">
+
+  <div class="momo-wrapper">
+    <div class="momo-phone">
+      <div class="momo-header">
+        <div class="momo-logo">
+          <span class="momo-star">★</span>
+          <div>
+            <strong>MTN MoMo</strong>
+            <small>Mobile Money Rwanda</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="momo-body">
+        <p class="momo-label">Payment Request From</p>
+        <h2 class="momo-merchant">KigaliFashion</h2>
+
+        <div class="momo-divider"></div>
+
+        <p class="momo-label">Order Reference</p>
+        <p class="momo-value">#{{ "%05d" % order.id }}</p>
+
+        <p class="momo-label">Amount to Pay</p>
+        <p class="momo-amount">{{ "{:,.0f}".format(order.total_amount + 1000) }} <span>RWF</span></p>
+
+        <p class="momo-label">From Number</p>
+        <p class="momo-value">{{ order.customer.phone }}</p>
+
+        <div class="momo-divider"></div>
+
+        <p class="momo-label">Enter MoMo PIN</p>
+        <div class="momo-pin-row">
+          <input type="password" maxlength="1" class="momo-pin-digit" />
+          <input type="password" maxlength="1" class="momo-pin-digit" />
+          <input type="password" maxlength="1" class="momo-pin-digit" />
+          <input type="password" maxlength="1" class="momo-pin-digit" />
+          <input type="password" maxlength="1" class="momo-pin-digit" />
+        </div>
+        <small class="momo-hint">
+          🔒 Demo: enter any 5 digits, then press Confirm
+        </small>
+
+        <form action="{{ url_for('orders.confirm_payment') }}" method="POST" id="momo-form">
+          <button type="submit" class="btn btn-momo btn-block" id="momo-confirm-btn" disabled>
+            Confirm Payment
+          </button>
+        </form>
+
+        <a href="{{ url_for('cart.view_cart') }}" class="momo-cancel">← Cancel &amp; return to cart</a>
+      </div>
+
+      <div class="momo-footer">
+        <span>🇷🇼 Rwanda · Secure Transaction</span>
+      </div>
+    </div>
+  </div>
+
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  const pinDigits = document.querySelectorAll('.momo-pin-digit');
+  const confirmBtn = document.getElementById('momo-confirm-btn');
+
+  pinDigits.forEach((input, idx) => {
+    input.addEventListener('input', () => {
+      if (input.value.length === 1 && idx < pinDigits.length - 1) {
+        pinDigits[idx + 1].focus();
+      }
+      const allFilled = [...pinDigits].every(d => d.value.length === 1);
+      confirmBtn.disabled = !allFilled;
+    });
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Backspace' && input.value === '' && idx > 0) {
+        pinDigits[idx - 1].focus();
+      }
+    });
+  });
+
+  pinDigits[0].focus();
+</script>
+{% endblock %}

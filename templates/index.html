@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+  <div class="hero-content">
+    <p class="hero-eyebrow">Kigali · Rwanda · Est. 2024</p>
+    <h1 class="hero-title">Wear the<br/><em>Spirit of Africa</em></h1>
+    <p class="hero-sub">
+      Handcrafted fashion rooted in Rwandan culture — Ankara prints,
+      Kitenge fabrics, and artisan accessories delivered to your door.
+    </p>
+    <a href="{{ url_for('products.catalog') }}" class="btn btn-primary">Shop the Collection</a>
+  </div>
+  <div class="hero-visual">
+    <div class="hero-badge">New Arrivals 🌿</div>
+    <img
+      src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=600"
+      alt="African fashion model"
+      class="hero-img"
+      loading="eager"
+    />
+  </div>
+</section>
+
+<section class="section categories-section">
+  <h2 class="section-title">Shop by Category</h2>
+  <div class="category-grid">
+    {% set cats = [
+      ("Dresses",     "👗", "#e07b5a"),
+      ("Tops",        "👚", "#5a8fc4"),
+      ("Accessories", "👜", "#c4a25a"),
+      ("Footwear",    "👟", "#6ab187"),
+      ("Men",         "👔", "#8e6abf"),
+      ("Skirts",      "🧣", "#bf6a8e"),
+    ] %}
+    {% for name, emoji, color in cats %}
+    <a href="{{ url_for('products.catalog') }}?category={{ name }}" class="category-card" style="--cat-color:{{ color }}">
+      <span class="cat-emoji">{{ emoji }}</span>
+      <span class="cat-name">{{ name }}</span>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section featured-section">
+  <h2 class="section-title">Featured Pieces</h2>
+  <p class="section-sub">Handpicked items from our latest collection</p>
+  <div class="product-grid">
+    {% for product in featured_products %}
+    <article class="product-card">
+      <a href="{{ url_for('products.product_detail', product_id=product.id) }}">
+        <div class="product-img-wrap">
+          <img src="{{ product.image_url }}" alt="{{ product.name }}" class="product-img" loading="lazy" />
+          <span class="product-tag">{{ product.category }}</span>
+        </div>
+      </a>
+      <div class="product-info">
+        <h3 class="product-name">
+          <a href="{{ url_for('products.product_detail', product_id=product.id) }}">{{ product.name }}</a>
+        </h3>
+        <p class="product-price">{{ "{:,.0f}".format(product.price) }} RWF</p>
+        <button
+          class="btn btn-outline add-to-cart-btn"
+          data-id="{{ product.id }}"
+          data-name="{{ product.name }}"
+        >
+          Add to Cart
+        </button>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  <div class="center-link">
+    <a href="{{ url_for('products.catalog') }}" class="btn btn-primary">View All Products →</a>
+  </div>
+</section>
+
+<section class="section why-section">
+  <div class="why-grid">
+    <div class="why-card">
+      <span class="why-icon">🚚</span>
+      <h3>Delivery to Kigali</h3>
+      <p>Same-day delivery within Kigali city, 2-day nationwide.</p>
+    </div>
+    <div class="why-card">
+      <span class="why-icon">📱</span>
+      <h3>Pay with MoMo</h3>
+      <p>Secure Mobile Money payments — no card required.</p>
+    </div>
+    <div class="why-card">
+      <span class="why-icon">🌿</span>
+      <h3>Sustainably Made</h3>
+      <p>Every piece supports Rwandan artisans and eco-friendly textiles.</p>
+    </div>
+    <div class="why-card">
+      <span class="why-icon">↩️</span>
+      <h3>Easy Returns</h3>
+      <p>Not happy? Return within 7 days, no questions asked.</p>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

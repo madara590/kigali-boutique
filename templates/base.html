@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}KigaliFashion{% endblock %} | Kigali Online Boutique</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="{{ url_for('main.index') }}" class="nav-logo">
+        <span class="logo-k">K</span>igaliFashion
+      </a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="{{ url_for('main.index') }}" class="nav-link">Home</a></li>
+        <li><a href="{{ url_for('products.catalog') }}" class="nav-link">Catalog</a></li>
+        <li><a href="{{ url_for('products.catalog') }}?category=Dresses" class="nav-link">Dresses</a></li>
+        <li><a href="{{ url_for('products.catalog') }}?category=Accessories" class="nav-link">Accessories</a></li>
+      </ul>
+      <a href="{{ url_for('cart.view_cart') }}" class="cart-icon" id="cart-icon-link">
+        🛍️
+        <span class="cart-badge" id="cart-badge">0</span>
+      </a>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">☰</button>
+    </div>
+  </nav>
+
+  <div class="toast" id="toast"></div>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <p><strong>KigaliFashion</strong> — Celebrating African Style in Rwanda 🇷🇼</p>
+      <p class="footer-sub">Built with Flask &amp; PostgreSQL · UNILAK Final Project</p>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>
