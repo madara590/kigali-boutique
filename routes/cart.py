@@ -1,8 +1,7 @@
 """
 routes/cart.py - Shopping cart logic stored in Flask session
 """
-
-from flask import Blueprint, session, request, jsonify, render_template, redirect, url_for
+from flask import Blueprint, session, request, jsonify, render_template
 from models.database import Product
 
 cart_bp = Blueprint("cart", __name__)
